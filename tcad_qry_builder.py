@@ -1,7 +1,7 @@
 import csv
 file = open('test_query_simple1.csv')
 
-csvreader = csv.reader(file)
+csvreader = csv.reader(file, delimiter=';') #put -- , delimiter=';' -- if csv file is not separated by ,
 
 headers = next(csvreader)
 
@@ -23,12 +23,13 @@ for row in csvreader:
     connecteur.append(row)
 
 file.close()
-
+output_file = open("echange+transit.qry","w")
 #create functions to define recurrent statements
 def xmlhead():
-  print('<?xml version="1.0"?>')
-  print("\n")
-  print("<critical_link_queries>")
+  output_file.write('<?xml version="1.0"?>')
+  output_file.write("\n")
+  output_file.write("<critical_link_queries>")
+  output_file.write('\n ')
 
 def printqueryentr(injecteur):
   global entree
@@ -42,7 +43,7 @@ def printqueryentr(injecteur):
   for i in notsort:
     texte = texte+i
 
-  print('\t\t\t'+texte)
+  output_file.write('\t\t\t'+texte)
 
 def printquerysort(injecteur):
   global entree
@@ -58,7 +59,7 @@ def printquerysort(injecteur):
   for i in notsort:
     texte2 = texte2+i
   texte1 = texte1[5:]
-  print('\t\t\t'+texte1+texte2+texte3) #première sortie = il ne peut pas avoir entré ou sorti du perimètre avant
+  output_file.write('\t\t\t'+texte1+texte2+texte3) #première sortie = il ne peut pas avoir entré ou sorti du perimètre avant
 
 def printquerytransit(injecteur_entree,injecteur_sortie): #dernière entrée et dernière sortie
   global entree
@@ -75,7 +76,7 @@ def printquerytransit(injecteur_entree,injecteur_sortie): #dernière entrée et 
     texte1 = texte1 + i
   for i in notsort:
     texte2 = texte2 + i
-  print('\t\t\t'+texte+texte1+texte2+texte3)
+  output_file.write('\t\t\t'+texte+texte1+texte2+texte3)
 
 def printquery_entree_connecteur(injecteur_entree, connecteur_destination):
   global entree
@@ -86,7 +87,7 @@ def printquery_entree_connecteur(injecteur_entree, connecteur_destination):
   texte2 = ' and EndLink'+connecteur_destination[2]+'(' + ci + ')'
   for i in notent:
     texte = texte+i
-  print('\t\t\t'+texte+texte2)
+  output_file.write('\t\t\t'+texte+texte2)
 
 def printquery_connecteur_sortie(connecteur_origine, injecteur_sortie):
   global sortie
@@ -98,30 +99,40 @@ def printquery_connecteur_sortie(connecteur_origine, injecteur_sortie):
   texte3 = ' and Link'+injecteur_sortie[2]+'('+si+')'
   for i in notsort:
     texte2 = texte2+i
-  print('\t\t\t'+texte1+texte2+texte3) #première sortie = il ne peut pas avoir entré ou sorti du perimètre avant
+  output_file.write('\t\t\t'+texte1+texte2+texte3) #première sortie = il ne peut pas avoir entré ou sorti du perimètre avant
 
 def debutquery():
-  print('\t<query>')
-  print("\t\t<name>"+" "+"Inj"+str(injecteur[0])+" "+"<\\name>")
-  print("\t\t<text>")
+  output_file.write('\n ')
+  output_file.write('\t<query>')
+  output_file.write('\n ')
+  output_file.write("\t\t<name>"+" "+"Inj"+str(injecteur[0])+" "+"<\\name>")
+  output_file.write('\n ')
+  output_file.write("\t\t<text>")
+  output_file.write('\n ')
 
 def debutqueryt(injecteur_entree,injecteur_sortie):
-  print('\t<query>')
-  print("\t\t<name>"+" "+"Inj"+str(injecteur_entree[0])+"-"+"Inj"+str(injecteur_sortie[0])+" "+"<\\name>")
-  print("\t\t<text>")
+  output_file.write('\n ')
+  output_file.write('\t<query>')
+  output_file.write('\n ')
+  output_file.write("\t\t<name>"+" "+"Inj"+str(injecteur_entree[0])+"-"+"Inj"+str(injecteur_sortie[0])+" "+"<\\name>")
+  output_file.write('\n ')
+  output_file.write("\t\t<text>")
+  output_file.write('\n ')
 
 def finquery():
-  print("\t\t<\\text>")
-  print('\t<\\query>')
-  print('\n')
+  output_file.write('\n ')
+  output_file.write("\t\t<\\text>")
+  output_file.write('\n ')
+  output_file.write('\t<\\query>')
+  output_file.write('\n')
 
 def printtale():
-  print('<\\critical_link_queries>')
+  output_file.write('<\\critical_link_queries>')
 
 ########################################################################################
 #assemble the different functions
-#for last entry in the perimeter :
 xmlhead()
+#for last entry in the perimeter :
 for injecteur in rows:
     if injecteur[4] == '1': #Column entrée
       debutquery()
@@ -129,12 +140,9 @@ for injecteur in rows:
       finquery()
     else:
       pass
-printtale()
-print('\n ******************************end of file*********************************')
-print('\n ')
+output_file.write('\n ')
 
 #for first exit from the perimeter :
-xmlhead()
 for injecteur in rows:
 
     if injecteur[5] == '1': #Column sortie
@@ -143,39 +151,14 @@ for injecteur in rows:
       finquery()
     else:
       pass
-printtale()
-print('\n ******************************end of file*********************************')
-print('\n ')
+output_file.write('\n ')
 
 #for only transit through the perimeter
-xmlhead()
 for injecteur_entree in rows_entree:
   for injecteur_sortie in rows_sortie:
     debutqueryt(injecteur_entree,injecteur_sortie)
     printquerytransit(injecteur_entree,injecteur_sortie)
     finquery()
-printtale()
-print('\n ******************************end of file*********************************')
-print('\n ')
+output_file.write('\n ')
 
-#for O-D entry
-xmlhead()
-for injecteur_entree in rows_entree:
-  for connecteur_destination in connecteur:
-    debutqueryt(injecteur_entree,connecteur_destination)
-    printquery_entree_connecteur(injecteur_entree,connecteur_destination)
-    finquery()
 printtale()
-print('\n ******************************end of file*********************************')
-print('\n ')
-
-#for O-D exit
-xmlhead()
-for injecteur_sortie in rows_sortie:
-  for connecteur_origine in connecteur:
-    debutqueryt(connecteur_origine, injecteur_sortie)
-    printquery_connecteur_sortie(connecteur_origine, injecteur_sortie)
-    finquery()
-printtale()
-print('\n ******************************end of file*********************************')
-print('\n ')
