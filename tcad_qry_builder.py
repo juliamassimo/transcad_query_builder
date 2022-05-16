@@ -61,7 +61,7 @@ def printquerysort(injecteur):
   texte1 = texte1[5:]
   output_file.write('\t\t\t'+texte1+texte2+texte3) #première sortie = il ne peut pas avoir entré ou sorti du perimètre avant
 
-def printquerytransit(injecteur_entree,injecteur_sortie): #dernière entrée et dernière sortie
+def printquerytransit(injecteur_entree,injecteur_sortie): #dernière entrée et première sortie
   global entree
   global sortie
   ei = injecteur_entree[1]
@@ -105,7 +105,7 @@ def debutquery():
   output_file.write('\n ')
   output_file.write('\t<query>')
   output_file.write('\n ')
-  output_file.write("\t\t<name>"+" "+"Inj"+str(injecteur[0])+" "+"<\\name>")
+  output_file.write("\t\t<name>"+" "+"Inj"+str(injecteur[0])+" "+"</name>")
   output_file.write('\n ')
   output_file.write("\t\t<text>")
   output_file.write('\n ')
@@ -114,20 +114,20 @@ def debutqueryt(injecteur_entree,injecteur_sortie):
   output_file.write('\n ')
   output_file.write('\t<query>')
   output_file.write('\n ')
-  output_file.write("\t\t<name>"+" "+"Inj"+str(injecteur_entree[0])+"-"+"Inj"+str(injecteur_sortie[0])+" "+"<\\name>")
+  output_file.write("\t\t<name>"+" "+"Inj"+str(injecteur_entree[0])+"-"+"Inj"+str(injecteur_sortie[0])+" "+"</name>")
   output_file.write('\n ')
   output_file.write("\t\t<text>")
   output_file.write('\n ')
 
 def finquery():
   output_file.write('\n ')
-  output_file.write("\t\t<\\text>")
+  output_file.write("\t\t</text>")
   output_file.write('\n ')
-  output_file.write('\t<\\query>')
+  output_file.write('\t</query>')
   output_file.write('\n')
 
 def printtale():
-  output_file.write('<\\critical_link_queries>')
+  output_file.write('</critical_link_queries>')
 
 ########################################################################################
 #assemble the different functions
